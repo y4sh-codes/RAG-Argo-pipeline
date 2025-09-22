@@ -12,15 +12,7 @@ This guide covers all the mock/placeholder values that need to be updated for a 
 - **Required for**: Text embeddings, GPT models
 - **Format**: `sk-proj-...` or `sk-...`
 
-### 2. Google Gemini API Key
-- **File**: `.env` 
-- **Variable**: `GEMINI_API_KEY`
-- **Current**: `"your-gemini-api-key-here"`
-- **Get from**: https://makersuite.google.com/app/apikey
-- **Required for**: Alternative embeddings (optional if using OpenAI)
-- **Format**: `AIzaSy...`
-
-### 3. Groq API Key
+### 2. Groq API Key
 - **File**: `.env`
 - **Variable**: `GROQ_API_KEY`
 - **Current**: `"gsk_your-groq-api-key-here"`
@@ -28,7 +20,7 @@ This guide covers all the mock/placeholder values that need to be updated for a 
 - **Required for**: Fast LLM inference
 - **Format**: `gsk_...`
 
-### 4. Secret Key for JWT
+### 3. Secret Key for JWT
 - **File**: `.env`
 - **Variable**: `SECRET_KEY`
 - **Current**: `"your-super-secret-key-change-this-in-production"`

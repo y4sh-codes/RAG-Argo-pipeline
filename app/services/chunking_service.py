@@ -1,5 +1,12 @@
 """
-Intelligent chunking service using OpenAI and Gemini models.
+Intelligent chunking servic        try:
+            # Initialize OpenAI
+            if settings.openai_api_key:
+                openai.api_key = settings.openai_api_key
+                self.openai_client = openai.OpenAI(api_key=settings.openai_api_key)
+                logger.info("OpenAI client initialized")
+            
+            # Initialize SentenceTransformer for semantic chunkings.
 Provides semantic-aware text chunking and embedding generation.
 """
 
@@ -10,7 +17,6 @@ import json
 import re
 
 import openai
-import google.generativeai as genai
 from sentence_transformers import SentenceTransformer
 
 from ..config import settings
@@ -24,7 +30,6 @@ class ChunkingService:
     
     def __init__(self):
         self.openai_client = None
-        self.gemini_model = None
         self.sentence_transformer = None
         
         # Initialize based on configuration
@@ -41,15 +46,6 @@ class ChunkingService:
                 openai.api_key = settings.openai_api_key
                 self.openai_client = openai.OpenAI(api_key=settings.openai_api_key)
                 logger.info("OpenAI client initialized")
-            
-            # Initialize Gemini
-            if settings.gemini_api_key and (
-                settings.chunking_model == "gemini" or 
-                settings.embedding_model == "gemini"
-            ):
-                genai.configure(api_key=settings.gemini_api_key)
-                self.gemini_model = genai.GenerativeModel(settings.gemini_chunking_model)
-                logger.info("Gemini model initialized")
             
             # Initialize sentence transformer for fallback embeddings
             self.sentence_transformer = SentenceTransformer('all-MiniLM-L6-v2')
@@ -432,8 +428,6 @@ class ChunkingService:
         try:
             if settings.embedding_model == "openai" and self.openai_client:
                 return await self._generate_openai_embedding(text)
-            elif settings.embedding_model == "gemini" and self.gemini_model:
-                return await self._generate_gemini_embedding(text)
             else:
                 # Fallback to sentence transformer
                 return self.sentence_transformer.encode(text).tolist()
@@ -450,15 +444,6 @@ class ChunkingService:
             input=text[:8000]  # Limit input length
         )
         return response.data[0].embedding
-    
-    async def _generate_gemini_embedding(self, text: str) -> List[float]:
-        """Generate embedding using Gemini."""
-        result = await genai.embed_content_async(
-            model=settings.gemini_embedding_model,
-            content=text[:8000],
-            task_type="retrieval_document"
-        )
-        return result['embedding']
     
     async def _create_simple_chunks(
         self, 

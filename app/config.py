@@ -32,7 +32,6 @@ class Settings(BaseSettings):
     
     # API Keys
     openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
-    gemini_api_key: Optional[str] = Field(default=None, env="GEMINI_API_KEY")
     groq_api_key: Optional[str] = Field(default=None, env="GROQ_API_KEY")
     
     # Model Configuration
@@ -44,10 +43,6 @@ class Settings(BaseSettings):
     openai_embedding_model: str = Field(default="text-embedding-3-small", env="OPENAI_EMBEDDING_MODEL")
     openai_chunking_model: str = Field(default="gpt-3.5-turbo", env="OPENAI_CHUNKING_MODEL")
     openai_max_tokens: int = Field(default=1000, env="OPENAI_MAX_TOKENS")
-    
-    # Gemini
-    gemini_embedding_model: str = Field(default="models/embedding-001", env="GEMINI_EMBEDDING_MODEL")
-    gemini_chunking_model: str = Field(default="gemini-pro", env="GEMINI_CHUNKING_MODEL")
     
     # Groq
     groq_model: str = Field(default="llama3-70b-8192", env="GROQ_MODEL")
@@ -112,8 +107,8 @@ class Settings(BaseSettings):
     @field_validator("embedding_model", "chunking_model")
     @classmethod
     def validate_ai_models(cls, v):
-        if v not in ["openai", "gemini"]:
-            raise ValueError("AI model must be 'openai' or 'gemini'")
+        if v != "openai":
+            raise ValueError("AI model must be 'openai'")
         return v
     
     @field_validator("chat_model")
@@ -168,17 +163,8 @@ def validate_api_keys():
     """Validate that required API keys are present."""
     errors = []
     
-    if settings.embedding_model == "openai" and not settings.openai_api_key:
-        errors.append("OPENAI_API_KEY is required when using OpenAI for embeddings")
-    
-    if settings.chunking_model == "openai" and not settings.openai_api_key:
-        errors.append("OPENAI_API_KEY is required when using OpenAI for chunking")
-    
-    if settings.embedding_model == "gemini" and not settings.gemini_api_key:
-        errors.append("GEMINI_API_KEY is required when using Gemini for embeddings")
-    
-    if settings.chunking_model == "gemini" and not settings.gemini_api_key:
-        errors.append("GEMINI_API_KEY is required when using Gemini for chunking")
+    if not settings.openai_api_key:
+        errors.append("OPENAI_API_KEY is required")
     
     if not settings.groq_api_key:
         errors.append("GROQ_API_KEY is required")
