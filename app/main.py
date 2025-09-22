@@ -120,7 +120,7 @@ app = FastAPI(
     - **RAG Queries**: Natural language queries with AI-powered responses and citations
     - **Report Generation**: Professional PDF reports with multiple templates
     - **Citation Management**: Automatic citation extraction and formatting
-    - **Multi-Model Support**: OpenAI, Gemini, and Groq integration
+    - **Multi-Model Support**: OpenAI and Groq integration
     
     ## Quick Start
     

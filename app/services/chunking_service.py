@@ -106,8 +106,6 @@ class ChunkingService:
             # Use AI to identify section boundaries
             if settings.chunking_model == "openai" and self.openai_client:
                 return await self._identify_sections_openai(text)
-            elif settings.chunking_model == "gemini" and self.gemini_model:
-                return await self._identify_sections_gemini(text)
             else:
                 # Fallback to rule-based section identification
                 return self._identify_sections_heuristic(text)
@@ -165,52 +163,6 @@ class ChunkingService:
             
         except Exception as e:
             logger.error(f"OpenAI section identification failed: {str(e)}")
-            return self._identify_sections_heuristic(text)
-    
-    async def _identify_sections_gemini(self, text: str) -> List[Dict[str, Any]]:
-        """Use Gemini to identify document sections."""
-        try:
-            # Truncate text if too long
-            max_length = 8000
-            if len(text) > max_length:
-                text = text[:max_length] + "..."
-            
-            prompt = f"""
-            Analyze this academic paper and identify logical sections.
-            Return a JSON array of sections with titles and approximate start positions.
-            
-            Format:
-            [{{"title": "Abstract", "start_position": 0, "section_type": "abstract"}}, ...]
-            
-            Text: {text}
-            """
-            
-            response = await self.gemini_model.generate_content_async(prompt)
-            content = response.text.strip()
-            
-            # Extract JSON from response
-            json_match = re.search(r'\[.*\]', content, re.DOTALL)
-            if json_match:
-                sections_data = json.loads(json_match.group())
-                
-                sections = []
-                for i, section in enumerate(sections_data):
-                    start_pos = section.get("start_position", 0)
-                    end_pos = sections_data[i + 1].get("start_position", len(text)) if i + 1 < len(sections_data) else len(text)
-                    
-                    sections.append({
-                        "title": section.get("title", f"Section {i + 1}"),
-                        "text": text[start_pos:end_pos],
-                        "section_type": section.get("section_type", "other"),
-                        "start_position": start_pos
-                    })
-                
-                return sections
-            
-            return self._identify_sections_heuristic(text)
-            
-        except Exception as e:
-            logger.error(f"Gemini section identification failed: {str(e)}")
             return self._identify_sections_heuristic(text)
     
     def _identify_sections_heuristic(self, text: str) -> List[Dict[str, Any]]:
@@ -393,7 +345,7 @@ class ChunkingService:
             chunk.text = self._clean_chunk_text(chunk.text)
             
             # Generate embeddings if needed
-            if settings.embedding_model in ["openai", "gemini"]:
+            if settings.embedding_model == "openai":
                 try:
                     chunk.embedding = await self.generate_embedding(chunk.text)
                 except Exception as e:

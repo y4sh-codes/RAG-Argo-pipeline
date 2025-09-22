@@ -4,7 +4,7 @@ A comprehensive, industry-ready RAG (Retrieval-Augmented Generation) pipeline fo
 
 ## 🌊 Features
 
-- **Multi-Modal AI Integration**: OpenAI, Gemini for embeddings and chunking, Groq for response generation
+- **Multi-Modal AI Integration**: OpenAI for embeddings and chunking, Groq for response generation
 - **Intelligent Document Processing**: PDF extraction with metadata parsing and semantic chunking
 - **Vector Search**: Qdrant-powered similarity search with advanced filtering
 - **Professional Report Generation**: PDF reports with multiple templates (scientific, business, academic)
@@ -17,7 +17,7 @@ A comprehensive, industry-ready RAG (Retrieval-Augmented Generation) pipeline fo
 ### Prerequisites
 
 - Docker and Docker Compose
-- API Keys for OpenAI, Gemini, and Groq
+- API Keys for OpenAI and Groq
 - Python 3.11+ (for local development)
 
 ### 1. Environment Setup
@@ -35,7 +35,6 @@ Edit `.env` with your API keys:
 
 ```env
 OPENAI_API_KEY="sk-your-openai-key"
-GEMINI_API_KEY="your-gemini-key"
 GROQ_API_KEY="gsk_your-groq-key"
 SECRET_KEY="your-secure-secret-key"
 ```
@@ -123,7 +122,7 @@ curl -X POST "http://localhost/reports/generate" \
          │                        │                        │
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │   Nginx Proxy   │    │   Redis Cache    │    │   AI Services   │
-│   (Port 80/443) │    │   (Port 6379)    │    │   OpenAI/Gemini │
+│   (Port 80/443) │    │   (Port 6379)    │    │   OpenAI        │
 │                 │    │                  │    │   Groq          │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
@@ -149,7 +148,6 @@ python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `OPENAI_API_KEY` | OpenAI API key for embeddings | Required |
-| `GEMINI_API_KEY` | Google Gemini API key | Required |
 | `GROQ_API_KEY` | Groq API key for responses | Required |
 | `QDRANT_URL` | Qdrant database URL | `http://localhost:6333` |
 | `CHUNK_SIZE` | Text chunk size | `1000` |
@@ -158,10 +156,10 @@ python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ### AI Model Configuration
 
 ```env
-# Choose embedding provider: "openai" or "gemini"
+# OpenAI is used for embeddings and chunking
 EMBEDDING_MODEL="openai"
 
-# Choose chunking provider: "openai" or "gemini"
+# OpenAI is used for text processing
 CHUNKING_MODEL="openai"
 
 # Groq model for responses
