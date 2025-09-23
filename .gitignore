@@ -107,7 +107,6 @@ temp/
 node_modules/
 
 # Model files
-models/
 *.bin
 *.safetensors
 
