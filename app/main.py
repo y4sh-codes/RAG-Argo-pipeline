@@ -9,15 +9,12 @@ from contextlib import asynccontextmanager
 from typing import Dict, Any
 
 import uvicorn
-from fastapi import FastAPI, Request, HTTPException, Depends
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 import structlog
 
 from .config import settings, validate_api_keys, create_directories
@@ -44,9 +41,6 @@ structlog.configure(
 )
 
 logger = structlog.get_logger()
-
-# Rate limiter
-limiter = Limiter(key_func=get_remote_address)
 
 
 @asynccontextmanager
@@ -127,10 +121,6 @@ app = FastAPI(
     1. Upload PDF documents using `/documents/upload`
     2. Search for information using `/search/semantic` or `/search/query`
     3. Generate reports using `/reports/generate`
-    
-    ## Authentication
-    
-    All endpoints require proper API configuration. See documentation for setup details.
     """,
     contact={
         "name": "RAG Argo Pipeline Support",
@@ -145,14 +135,10 @@ app = FastAPI(
     redoc_url="/redoc" if settings.environment != "production" else None,
 )
 
-# Add rate limiting
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
 # Add middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.environment == "development" else ["https://yourdomain.com"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -246,7 +232,6 @@ async def read_root():
 
 # Health check endpoint
 @app.get("/health", tags=["system"])
-@limiter.limit("60/minute")
 async def health_check(request: Request):
     """
     Comprehensive health check for all system components.
@@ -327,7 +312,6 @@ async def health_check(request: Request):
 
 # System information endpoint
 @app.get("/info", tags=["system"])
-@limiter.limit("30/minute") 
 async def system_info(request: Request):
     """Get system information and statistics."""
     try:
@@ -382,15 +366,6 @@ def custom_openapi():
     # Add custom schema properties
     openapi_schema["info"]["x-logo"] = {
         "url": "https://example.com/logo.png"
-    }
-    
-    # Add security schemes
-    openapi_schema["components"]["securitySchemes"] = {
-        "APIKeyHeader": {
-            "type": "apiKey",
-            "in": "header", 
-            "name": "X-API-Key"
-        }
     }
     
     app.openapi_schema = openapi_schema

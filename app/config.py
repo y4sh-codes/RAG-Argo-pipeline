@@ -25,11 +25,6 @@ class Settings(BaseSettings):
     port: int = Field(default=8000, env="PORT")
     reload: bool = Field(default=False, env="RELOAD")
     
-    # Security
-    secret_key: str = Field(env="SECRET_KEY")
-    access_token_expire_minutes: int = Field(default=30, env="ACCESS_TOKEN_EXPIRE_MINUTES")
-    algorithm: str = Field(default="HS256", env="ALGORITHM")
-    
     # API Keys
     openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
     groq_api_key: Optional[str] = Field(default=None, env="GROQ_API_KEY")
@@ -70,10 +65,6 @@ class Settings(BaseSettings):
     default_search_limit: int = Field(default=10, env="DEFAULT_SEARCH_LIMIT")
     max_search_limit: int = Field(default=50, env="MAX_SEARCH_LIMIT")
     similarity_threshold: float = Field(default=0.7, env="SIMILARITY_THRESHOLD")
-    
-    # Rate Limiting
-    rate_limit_requests: int = Field(default=100, env="RATE_LIMIT_REQUESTS")
-    rate_limit_period: int = Field(default=60, env="RATE_LIMIT_PERIOD")
     
     # Redis
     redis_url: str = Field(default="redis://localhost:6379/0", env="REDIS_URL")
@@ -168,9 +159,6 @@ def validate_api_keys():
     
     if not settings.groq_api_key:
         errors.append("GROQ_API_KEY is required")
-    
-    if not settings.secret_key or settings.secret_key == "your-super-secret-key-change-this-in-production":
-        errors.append("SECRET_KEY must be set and changed from default value")
     
     if errors:
         raise ValueError(f"Configuration errors: {'; '.join(errors)}")

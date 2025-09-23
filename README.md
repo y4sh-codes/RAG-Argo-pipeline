@@ -9,16 +9,14 @@ A comprehensive, industry-ready RAG (Retrieval-Augmented Generation) pipeline fo
 - **Vector Search**: Qdrant-powered similarity search with advanced filtering
 - **Professional Report Generation**: PDF reports with multiple templates (scientific, business, academic)
 - **Citation Management**: Automatic citation extraction and APA formatting
-- **Enterprise Security**: JWT authentication, rate limiting, API key management
-- **Production Ready**: Docker deployment with monitoring, logging, and health checks
+- **Production Ready**: FastAPI with monitoring, logging, and health checks
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Docker and Docker Compose
+- Python 3.11+
 - API Keys for OpenAI and Groq
-- Python 3.11+ (for local development)
 
 ### 1. Environment Setup
 
