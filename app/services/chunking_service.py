@@ -1,5 +1,6 @@
 """
-Intelligent chunking servic        try:
+Intelligent chunking service
+        try:
             # Initialize OpenAI
             if settings.openai_api_key:
                 openai.api_key = settings.openai_api_key
